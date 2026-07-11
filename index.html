@@ -56,65 +56,109 @@
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
-  body{background:var(--graphite); color:var(--ink); font-family:var(--body); line-height:1.6;}
+  body{background:var(--graphite); color:var(--ink); font-family:var(--body); line-height:1.6; overflow-x:hidden;}
   ::selection{background:var(--gold); color:var(--graphite);}
   a{color:inherit; text-decoration:none;}
   .wrap{max-width:1152px; margin:0 auto; padding:0 24px;}
   .eyebrow{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.28em; color:var(--ceramic);}
   h1,h2,h3{font-family:var(--display); text-transform:uppercase; font-weight:800; line-height:.95;}
-  .btn{display:inline-block; background:var(--gold); color:var(--graphite); font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.28em; padding:14px 26px; border-radius:2px; border:none; cursor:pointer; transition:.2s;}
-  .btn:hover{background:var(--ceramic);}
-  .btn-outline{display:inline-block; border:1px solid var(--gold); color:var(--gold); font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.28em; padding:13px 25px; border-radius:2px; transition:.2s;}
-  .btn-outline:hover{background:var(--gold); color:var(--graphite);}
   section{border-bottom:1px solid var(--surfaceLine); padding:80px 0;}
 
-  header{position:sticky; top:0; z-index:50; background:rgba(23,25,27,.92); backdrop-filter:blur(6px); border-bottom:1px solid var(--surfaceLine);}
+  /* ---------- Motion system ---------- */
+  @keyframes fadeInUp{ from{opacity:0; transform:translateY(28px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes sweep{ 0%{transform:translateX(-130%) rotate(12deg);} 100%{transform:translateX(230%) rotate(12deg);} }
+  @keyframes glowPulse{ 0%,100%{opacity:.28;} 50%{opacity:.55;} }
+  @keyframes ticker{ 0%{opacity:0; transform:translateY(6px);} 100%{opacity:1; transform:translateY(0);} }
+
+  .load-in{opacity:0; animation:fadeInUp .8s cubic-bezier(.19,1,.22,1) forwards;}
+  .load-in.d1{animation-delay:.05s;} .load-in.d2{animation-delay:.16s;}
+  .load-in.d3{animation-delay:.27s;} .load-in.d4{animation-delay:.38s;}
+  .load-in.d5{animation-delay:.49s;} .load-in.d6{animation-delay:.6s;}
+
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .7s cubic-bezier(.19,1,.22,1), transform .7s cubic-bezier(.19,1,.22,1);}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  .reveal.d1.in{transition-delay:.06s;} .reveal.d2.in{transition-delay:.14s;}
+  .reveal.d3.in{transition-delay:.22s;} .reveal.d4.in{transition-delay:.3s;}
+
+  @media (prefers-reduced-motion: reduce){
+    .load-in, .reveal{opacity:1 !important; transform:none !important; animation:none !important; transition:none !important;}
+    .panel .g2, .glow{animation:none !important;}
+  }
+
+  /* Buttons with shine sweep */
+  .btn, .btn-outline{position:relative; overflow:hidden; display:inline-block; font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.28em; border-radius:2px; transition:transform .2s ease, background .2s ease, color .2s ease;}
+  .btn{background:var(--gold); color:var(--graphite); padding:14px 26px; border:none; cursor:pointer;}
+  .btn:hover{background:var(--ceramic); transform:translateY(-2px);}
+  .btn-outline{border:1px solid var(--gold); color:var(--gold); padding:13px 25px;}
+  .btn-outline:hover{background:var(--gold); color:var(--graphite); transform:translateY(-2px);}
+  .btn::after, .btn-outline::after{content:''; position:absolute; top:0; left:-60%; width:35%; height:100%; background:linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent); transform:skewX(-20deg); transition:left .6s ease;}
+  .btn:hover::after, .btn-outline:hover::after{left:130%;}
+
+  /* Header */
+  header{position:sticky; top:0; z-index:50; background:rgba(23,25,27,.9); backdrop-filter:blur(6px); border-bottom:1px solid var(--surfaceLine); transition:box-shadow .3s ease;}
+  header.scrolled{box-shadow:0 10px 30px rgba(0,0,0,.35);}
   header .wrap{display:flex; align-items:center; justify-content:space-between; padding-top:16px; padding-bottom:16px;}
   .logo{display:flex; align-items:baseline; gap:8px;}
   .logo .mark{font-family:var(--display); font-size:24px; font-weight:800;}
   .logo .tag{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.28em; color:var(--gold);}
   nav{display:flex; gap:32px;}
-  nav a{font-size:14px; color:var(--steel); transition:.2s;}
+  nav a{font-size:14px; color:var(--steel); transition:color .2s ease;}
   nav a:hover{color:var(--ink);}
   .call-btn{border:1px solid var(--gold); color:var(--gold); font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.2em; padding:8px 16px; border-radius:2px; transition:.2s;}
   .call-btn:hover{background:var(--gold); color:var(--graphite);}
   @media(max-width:768px){ nav{display:none;} }
 
+  /* Hero */
+  .hero{border-bottom:1px solid var(--surfaceLine); padding:0;}
   .hero .wrap{display:grid; grid-template-columns:1.1fr .9fr; gap:48px; padding-top:96px; padding-bottom:96px;}
   .hero h1{font-size:56px; margin-top:20px;}
   .hero p.lead{margin-top:24px; max-width:440px; color:var(--steel);}
   .hero .ctas{margin-top:32px; display:flex; gap:16px; flex-wrap:wrap; align-items:center;}
-  .hero .ctas .callink{font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.28em; text-decoration:underline; text-decoration-color:var(--steel); text-underline-offset:4px;}
+  .hero .ctas .callink{font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.28em; text-decoration:underline; text-decoration-color:var(--steel); text-underline-offset:4px; transition:text-decoration-color .2s ease;}
+  .hero .ctas .callink:hover{text-decoration-color:var(--gold);}
   .stats{margin-top:56px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; border-top:1px solid var(--surfaceLine); padding-top:24px; max-width:440px;}
   .stats .num{font-family:var(--display); font-size:30px; font-weight:700;}
   .stats .lbl{margin-top:4px; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.28em; color:var(--steel);}
-  .panel{position:relative; aspect-ratio:4/5; max-width:380px; margin:0 auto; overflow:hidden; border-radius:2px; border:1px solid var(--surfaceLine); background:var(--surface);}
+
+  .panel-wrap{position:relative; perspective:900px;}
+  .glow{position:absolute; inset:-30px; background:radial-gradient(circle at 50% 30%, rgba(198,161,91,.3), transparent 60%); filter:blur(30px); animation:glowPulse 4s ease-in-out infinite; z-index:0;}
+  .panel{position:relative; z-index:1; aspect-ratio:4/5; max-width:380px; margin:0 auto; overflow:hidden; border-radius:2px; border:1px solid var(--surfaceLine); background:var(--surface); transition:transform .2s ease; transform-style:preserve-3d;}
   .panel .g1{position:absolute; inset:0; background:linear-gradient(135deg,#2C3033 0%,#17191B 45%,#0F1112 100%);}
-  .panel .g2{position:absolute; left:-33%; top:0; height:100%; width:66%; transform:rotate(12deg); background:linear-gradient(90deg,transparent 0%,rgba(198,161,91,.18) 45%,rgba(79,169,199,.22) 55%,transparent 100%);}
+  .panel .g2{position:absolute; left:-30%; top:0; height:100%; width:60%; background:linear-gradient(90deg,transparent 0%,rgba(198,161,91,.22) 45%,rgba(79,169,199,.28) 55%,transparent 100%); animation:sweep 4s ease-in-out infinite;}
   .panel .cap{position:absolute; left:0; right:0; bottom:0; border-top:1px dashed var(--surfaceLine); background:rgba(23,25,27,.8); padding:16px 20px; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.28em; color:var(--steel);}
   @media(max-width:768px){ .hero .wrap{grid-template-columns:1fr;} .hero h1{font-size:44px;} }
 
+  /* Before / after — handle lives on the image itself */
   .compare-wrap{max-width:720px; margin:40px auto 0;}
-  .compare{position:relative; aspect-ratio:16/9; overflow:hidden; border-radius:2px; border:1px solid var(--surfaceLine); user-select:none;}
+  .compare{position:relative; aspect-ratio:16/9; overflow:hidden; border-radius:2px; border:1px solid var(--surfaceLine); user-select:none; cursor:ew-resize; touch-action:none;}
   .before-layer{position:absolute; inset:0; background:repeating-linear-gradient(115deg,#2A2D2F 0px,#33373A 2px,#2A2D2F 4px);}
-  .after-layer{position:absolute; inset:0; overflow:hidden;}
+  .after-layer{position:absolute; inset:0; overflow:hidden; will-change:clip-path;}
   .after-fill{position:absolute; inset:0; background:linear-gradient(135deg,#35393C 0%,#17191B 55%,#0F1112 100%);}
   .after-sheen{position:absolute; left:-25%; top:0; height:100%; width:50%; transform:rotate(12deg); background:linear-gradient(90deg,transparent 0%,rgba(79,169,199,.35) 50%,transparent 100%);}
-  .compare-label{position:absolute; left:16px; top:16px; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.28em;}
+  .compare-label{position:absolute; top:16px; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.28em;}
+  .before-layer .compare-label{left:16px; color:var(--steel);}
+  .after-layer .compare-label{left:16px; color:var(--ceramic);}
   .handle{position:absolute; top:0; height:100%; width:2px; background:var(--gold); pointer-events:none;}
-  #compareRange{width:100%; margin-top:24px; accent-color:var(--gold);}
+  .handle-grip{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:44px; height:44px; border-radius:50%; background:var(--gold); color:var(--graphite); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:15px; box-shadow:0 6px 18px rgba(0,0,0,.4); pointer-events:auto; cursor:grab;}
+  .compare.dragging{cursor:ew-resize;}
+  .compare.dragging .handle-grip{cursor:grabbing;}
+  .compare-hint{margin-top:14px; text-align:center; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.28em; color:var(--steel);}
 
+  /* Services */
   .svc-grid{margin-top:48px; display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--surfaceLine); border:1px solid var(--surfaceLine); border-radius:2px; overflow:hidden;}
-  .svc-card{background:var(--graphite); padding:32px; transition:.2s;}
-  .svc-card:hover{background:var(--surface);}
+  .svc-card{background:var(--graphite); padding:32px; transition:transform .25s ease, background .25s ease;}
+  .svc-card:hover{background:var(--surface); transform:translateY(-4px);}
   .svc-card .code{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.28em; color:var(--steel);}
   .svc-card h3{margin-top:12px; font-size:24px;}
   .svc-card p{margin-top:12px; max-width:340px; font-size:14px; color:var(--steel);}
-  .svc-card .more{margin-top:20px; display:inline-block; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.28em; color:var(--gold);}
+  .svc-card .more{margin-top:20px; display:inline-block; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.28em; color:var(--gold); transition:transform .2s ease;}
+  .svc-card:hover .more{transform:translateX(4px);}
   @media(max-width:640px){ .svc-grid{grid-template-columns:1fr;} }
 
+  /* Pricing */
   .price-grid{margin-top:48px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
-  .ticket{border:1px dashed var(--surfaceLine); background:var(--graphite); padding:28px;}
+  .ticket{border:1px dashed var(--surfaceLine); background:var(--graphite); padding:28px; transition:transform .25s ease, border-color .25s ease;}
+  .ticket:hover{transform:translateY(-6px); border-color:var(--gold);}
   .ticket-top{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.28em; color:var(--steel);}
   .ticket h3{margin-top:16px; font-size:20px;}
   .ticket .price{margin-top:8px; font-family:var(--display); font-size:36px; font-weight:800; color:var(--gold);}
@@ -123,33 +167,39 @@
   .ticket .btn-outline{margin-top:24px; display:block; text-align:center;}
   @media(max-width:768px){ .price-grid{grid-template-columns:1fr;} }
 
+  /* Process */
   .steps{margin-top:48px; display:grid; grid-template-columns:repeat(4,1fr); gap:32px;}
-  .step{border-top:1px solid var(--gold); padding-top:20px;}
+  .step{border-top:1px solid var(--gold); padding-top:20px; transition:transform .25s ease;}
+  .step:hover{transform:translateY(-4px);}
   .step .n{font-family:var(--mono); font-size:12px; color:var(--steel);}
   .step h3{margin-top:8px; font-size:20px;}
   .step p{margin-top:8px; font-size:14px; color:var(--steel);}
   @media(max-width:768px){ .steps{grid-template-columns:1fr 1fr;} }
 
+  /* Reviews */
   .rev-head{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:16px;}
   .rev-grid{margin-top:48px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
-  .rev-card{border:1px solid var(--surfaceLine); background:var(--graphite); padding:24px;}
+  .rev-card{border:1px solid var(--surfaceLine); background:var(--graphite); padding:24px; transition:transform .25s ease, border-color .25s ease;}
+  .rev-card:hover{transform:translateY(-4px); border-color:var(--gold);}
   .rev-card .stars{font-family:var(--mono); font-size:12px; color:var(--gold);}
   .rev-card p{margin-top:16px; font-size:14px;}
   .rev-card .who{margin-top:20px; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.28em; color:var(--steel);}
   @media(max-width:768px){ .rev-grid{grid-template-columns:1fr;} }
 
+  /* Quote form */
   .quote-grid{display:grid; grid-template-columns:.9fr 1.1fr; gap:48px;}
   .quote-grid h2{margin-top:12px; font-size:36px;}
   .quote-grid p{margin-top:16px; max-width:340px; color:var(--steel); font-size:14px;}
   form{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
-  form input, form textarea{grid-column:span 1; background:var(--surface); border:1px solid var(--surfaceLine); color:var(--ink); padding:14px 16px; font-size:14px; font-family:var(--body);}
+  form input, form textarea{grid-column:span 1; background:var(--surface); border:1px solid var(--surfaceLine); color:var(--ink); padding:14px 16px; font-size:14px; font-family:var(--body); transition:border-color .2s ease;}
   form input::placeholder, form textarea::placeholder{color:var(--steel);}
   form input:focus, form textarea:focus{outline:2px solid var(--gold); outline-offset:2px;}
   form .full{grid-column:span 2;}
   form button{grid-column:span 2;}
-  .sent-msg{border:1px dashed var(--gold); color:var(--gold); font-family:var(--mono); padding:32px; font-size:14px;}
+  .sent-msg{border:1px dashed var(--gold); color:var(--gold); font-family:var(--mono); padding:32px; font-size:14px; animation:ticker .4s ease forwards;}
   @media(max-width:768px){ .quote-grid{grid-template-columns:1fr;} form{grid-template-columns:1fr;} form input, form .full, form button{grid-column:span 1;} }
 
+  /* Footer */
   footer{border-top:1px solid var(--surfaceLine);}
   .foot-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:40px; padding:56px 0;}
   .foot-grid .mark{font-family:var(--display); font-size:20px; font-weight:700;}
@@ -157,6 +207,7 @@
   .foot-h{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.28em; color:var(--gold);}
   .foot-grid ul{margin-top:12px; list-style:none; font-size:14px; color:var(--steel);}
   .foot-grid li{margin-bottom:4px;}
+  .foot-grid li a{transition:color .2s ease;}
   .foot-grid li a:hover{color:var(--ink);}
   .foot-bottom{border-top:1px solid var(--surfaceLine); padding:20px 0; text-align:center; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.28em; color:var(--steel);}
   @media(max-width:768px){ .foot-grid{grid-template-columns:1fr 1fr;} }
@@ -164,7 +215,7 @@
 </head>
 <body>
 
-<header>
+<header id="siteHeader">
   <div class="wrap">
     <a href="#" class="logo">
       <span class="mark">APEX</span>
@@ -182,27 +233,30 @@
 
 <main>
 
-  <section class="hero" style="border-bottom:1px solid var(--surfaceLine); padding:0;">
+  <section class="hero">
     <div class="wrap">
       <div>
-        <div class="eyebrow">Work Order &middot; St. Louis, MO</div>
-        <h1>Concours-level finish. At your driveway.</h1>
-        <p class="lead">Ceramic coating and paint correction performed on-site by certified detailers &mdash; not a car wash tunnel, not a franchise script. Fully mobile, fully insured.</p>
-        <div class="ctas">
+        <div class="eyebrow load-in d1">Work Order &middot; St. Louis, MO</div>
+        <h1 class="load-in d2">Concours-level finish. At your driveway.</h1>
+        <p class="lead load-in d3">Ceramic coating and paint correction performed on-site by certified detailers &mdash; not a car wash tunnel, not a franchise script. Fully mobile, fully insured.</p>
+        <div class="ctas load-in d4">
           <a href="#quote" class="btn">Get a quote</a>
           <a href="tel:+13144999409" class="callink">Call (314) 499-9409</a>
         </div>
-        <div class="stats">
-          <div><div class="num">500+</div><div class="lbl">Vehicles detailed</div></div>
-          <div><div class="num">5.0</div><div class="lbl">Avg. Google rating</div></div>
-          <div><div class="num">48hr</div><div class="lbl">Booking turnaround</div></div>
+        <div class="stats load-in d5">
+          <div><div class="num stat-num" data-count="500" data-suffix="+">0</div><div class="lbl">Vehicles detailed</div></div>
+          <div><div class="num stat-num" data-count="5.0" data-suffix="">0</div><div class="lbl">Avg. Google rating</div></div>
+          <div><div class="num stat-num" data-count="48" data-suffix="hr">0</div><div class="lbl">Booking turnaround</div></div>
         </div>
       </div>
-      <div>
-        <div class="panel">
-          <div class="g1"></div>
-          <div class="g2"></div>
-          <div class="cap">Panel 04 &middot; Ceramic coated &middot; 9H hardness</div>
+      <div class="load-in d6">
+        <div class="panel-wrap" id="panelWrap">
+          <div class="glow"></div>
+          <div class="panel" id="tiltPanel">
+            <div class="g1"></div>
+            <div class="g2"></div>
+            <div class="cap">Panel 04 &middot; Ceramic coated &middot; 9H hardness</div>
+          </div>
         </div>
       </div>
     </div>
@@ -210,32 +264,34 @@
 
   <section style="background:var(--surface);">
     <div class="wrap">
-      <div class="eyebrow">Paint correction</div>
-      <h2 style="margin-top:12px; font-size:40px;">See the correction</h2>
-      <p style="margin-top:12px; max-width:520px; color:var(--steel); font-size:14px;">Drag to compare swirl-marked paint against a fully corrected, ceramic-coated panel under the same studio lighting.</p>
+      <div class="eyebrow reveal">Paint correction</div>
+      <h2 class="reveal d1" style="margin-top:12px; font-size:40px;">See the correction</h2>
+      <p class="reveal d2" style="margin-top:12px; max-width:520px; color:var(--steel); font-size:14px;">Drag the handle &mdash; right on the image &mdash; to reveal the corrected, ceramic-coated finish.</p>
 
-      <div class="compare-wrap">
+      <div class="compare-wrap reveal d3">
         <div class="compare" id="compareBox">
           <div class="before-layer">
-            <span class="compare-label" style="color:var(--steel);">Before &middot; swirl marks</span>
+            <span class="compare-label">Before &middot; swirl marks</span>
           </div>
           <div class="after-layer" id="afterLayer" style="clip-path:inset(0 50% 0 0);">
             <div class="after-fill"></div>
             <div class="after-sheen"></div>
-            <span class="compare-label" style="color:var(--ceramic);">After &middot; ceramic coated</span>
+            <span class="compare-label">After &middot; ceramic coated</span>
           </div>
-          <div class="handle" id="handle" style="left:50%;"></div>
+          <div class="handle" id="handle" style="left:50%;">
+            <div class="handle-grip">&#8596;</div>
+          </div>
         </div>
-        <input type="range" id="compareRange" min="0" max="100" value="50" aria-label="Drag to compare before and after paint correction">
+        <div class="compare-hint">Drag to compare</div>
       </div>
     </div>
   </section>
 
   <section id="services">
     <div class="wrap">
-      <div class="eyebrow">What we do</div>
-      <h2 style="margin-top:12px; font-size:40px;">Built for finish, not throughput</h2>
-      <div class="svc-grid">
+      <div class="eyebrow reveal">What we do</div>
+      <h2 class="reveal d1" style="margin-top:12px; font-size:40px;">Built for finish, not throughput</h2>
+      <div class="svc-grid reveal d2">
         <a href="#quote" class="svc-card">
           <div class="code">PKG-01</div>
           <h3>Ceramic Coating</h3>
@@ -266,10 +322,10 @@
 
   <section id="pricing" style="background:var(--surface);">
     <div class="wrap">
-      <div class="eyebrow">Pricing</div>
-      <h2 style="margin-top:12px; font-size:40px;">Flat rates. No upsell games.</h2>
+      <div class="eyebrow reveal">Pricing</div>
+      <h2 class="reveal d1" style="margin-top:12px; font-size:40px;">Flat rates. No upsell games.</h2>
       <div class="price-grid">
-        <div class="ticket">
+        <div class="ticket reveal d1">
           <div class="ticket-top"><span>TICKET-A</span><span>Apex &middot; STL</span></div>
           <h3>Maintenance Wash</h3>
           <div class="price">$89</div>
@@ -280,7 +336,7 @@
           </ul>
           <a href="#quote" class="btn-outline">Book this</a>
         </div>
-        <div class="ticket">
+        <div class="ticket reveal d2">
           <div class="ticket-top"><span>TICKET-B</span><span>Apex &middot; STL</span></div>
           <h3>Full Detail</h3>
           <div class="price">$249</div>
@@ -291,7 +347,7 @@
           </ul>
           <a href="#quote" class="btn-outline">Book this</a>
         </div>
-        <div class="ticket">
+        <div class="ticket reveal d3">
           <div class="ticket-top"><span>TICKET-C</span><span>Apex &middot; STL</span></div>
           <h3>Ceramic Package</h3>
           <div class="price">$899</div>
@@ -308,13 +364,13 @@
 
   <section id="process">
     <div class="wrap">
-      <div class="eyebrow">How booking works</div>
-      <h2 style="margin-top:12px; font-size:40px;">Four steps, one visit</h2>
+      <div class="eyebrow reveal">How booking works</div>
+      <h2 class="reveal d1" style="margin-top:12px; font-size:40px;">Four steps, one visit</h2>
       <div class="steps">
-        <div class="step"><div class="n">01</div><h3>Request a quote</h3><p>Tell us your vehicle and what it needs. Most quotes go out within an hour.</p></div>
-        <div class="step"><div class="n">02</div><h3>Pick a slot</h3><p>We text you a same-week window &mdash; morning, afternoon, or evening.</p></div>
-        <div class="step"><div class="n">03</div><h3>We come to you</h3><p>Fully equipped mobile rig arrives at your driveway, office, or lot.</p></div>
-        <div class="step"><div class="n">04</div><h3>Inspect &amp; go</h3><p>Walk the vehicle with your detailer before we pack up. No surprises.</p></div>
+        <div class="step reveal d1"><div class="n">01</div><h3>Request a quote</h3><p>Tell us your vehicle and what it needs. Most quotes go out within an hour.</p></div>
+        <div class="step reveal d2"><div class="n">02</div><h3>Pick a slot</h3><p>We text you a same-week window &mdash; morning, afternoon, or evening.</p></div>
+        <div class="step reveal d3"><div class="n">03</div><h3>We come to you</h3><p>Fully equipped mobile rig arrives at your driveway, office, or lot.</p></div>
+        <div class="step reveal d4"><div class="n">04</div><h3>Inspect &amp; go</h3><p>Walk the vehicle with your detailer before we pack up. No surprises.</p></div>
       </div>
     </div>
   </section>
@@ -323,23 +379,23 @@
     <div class="wrap">
       <div class="rev-head">
         <div>
-          <div class="eyebrow">Reviews</div>
-          <h2 style="margin-top:12px; font-size:40px;">5.0 on Google, 127 reviews</h2>
+          <div class="eyebrow reveal">Reviews</div>
+          <h2 class="reveal d1" style="margin-top:12px; font-size:40px;">5.0 on Google, 127 reviews</h2>
         </div>
-        <a href="#" style="font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.28em; color:var(--gold); text-decoration:underline; text-underline-offset:4px;">Read all reviews on Google &rarr;</a>
+        <a href="#" class="reveal d2" style="font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.28em; color:var(--gold); text-decoration:underline; text-underline-offset:4px;">Read all reviews on Google &rarr;</a>
       </div>
       <div class="rev-grid">
-        <div class="rev-card">
+        <div class="rev-card reveal d1">
           <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           <p>&ldquo;Swirls I'd had for two years were just gone. Booked the mobile slot on a Tuesday, done by lunch.&rdquo;</p>
           <div class="who">Marcus T. &middot; 2021 Tesla Model 3</div>
         </div>
-        <div class="rev-card">
+        <div class="rev-card reveal d2">
           <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           <p>&ldquo;They came to my office lot. Ceramic coating still beading water eight months later.&rdquo;</p>
           <div class="who">Dana R. &middot; 2019 Ford F-150</div>
         </div>
-        <div class="rev-card">
+        <div class="rev-card reveal d3">
           <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           <p>&ldquo;Flat pricing, no upsell pressure, and the interior looked better than the day I bought it.&rdquo;</p>
           <div class="who">Priya K. &middot; 2022 Audi Q5</div>
@@ -351,12 +407,12 @@
   <section id="quote" style="border-bottom:none;">
     <div class="wrap">
       <div class="quote-grid">
-        <div>
+        <div class="reveal">
           <div class="eyebrow">Get a quote</div>
           <h2>Tell us about your vehicle</h2>
           <p>Most quotes go out within an hour during business hours. Serving St. Louis and surrounding areas within 25 miles.</p>
         </div>
-        <div id="formHolder">
+        <div id="formHolder" class="reveal d1">
           <form id="quoteForm">
             <input required name="name" placeholder="Full name">
             <input required name="phone" placeholder="Phone number">
@@ -398,16 +454,99 @@
 </footer>
 
 <script>
-  const range = document.getElementById('compareRange');
-  const afterLayer = document.getElementById('afterLayer');
-  const handle = document.getElementById('handle');
-  range.addEventListener('input', () => {
-    const v = range.value;
-    afterLayer.style.clipPath = `inset(0 ${100 - v}% 0 0)`;
-    handle.style.left = v + '%';
+  /* Sticky header shadow on scroll */
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 10);
   });
 
-  document.getElementById('quoteForm').addEventListener('submit', function(e){
+  /* Scroll-triggered reveals */
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach((el) => io.observe(el));
+
+  /* Stat counters */
+  function animateCounter(el) {
+    const raw = el.getAttribute('data-count');
+    const suffix = el.getAttribute('data-suffix') || '';
+    const isDecimal = raw.includes('.');
+    const target = parseFloat(raw);
+    const duration = 1300;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = target * eased;
+      el.textContent = (isDecimal ? val.toFixed(1) : Math.round(val)) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const statEls = document.querySelectorAll('.stat-num');
+  const statIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        statIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  statEls.forEach((el) => statIO.observe(el));
+
+  /* Hero panel 3D tilt on cursor */
+  const panelWrap = document.getElementById('panelWrap');
+  const tiltPanel = document.getElementById('tiltPanel');
+  panelWrap.addEventListener('mousemove', (e) => {
+    const rect = panelWrap.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    tiltPanel.style.transform = `rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
+  });
+  panelWrap.addEventListener('mouseleave', () => {
+    tiltPanel.style.transform = 'rotateY(0deg) rotateX(0deg)';
+  });
+
+  /* Before/after — drag directly on the image, no separate slider bar */
+  const compareBox = document.getElementById('compareBox');
+  const afterLayer = document.getElementById('afterLayer');
+  const handle = document.getElementById('handle');
+  let dragging = false;
+
+  function setSplit(clientX) {
+    const rect = compareBox.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const pct = Math.min(100, Math.max(0, (x / rect.width) * 100));
+    afterLayer.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+    handle.style.left = pct + '%';
+  }
+
+  function startDrag(clientX) {
+    dragging = true;
+    compareBox.classList.add('dragging');
+    setSplit(clientX);
+  }
+  function endDrag() {
+    dragging = false;
+    compareBox.classList.remove('dragging');
+  }
+
+  compareBox.addEventListener('mousedown', (e) => startDrag(e.clientX));
+  window.addEventListener('mousemove', (e) => { if (dragging) setSplit(e.clientX); });
+  window.addEventListener('mouseup', endDrag);
+
+  compareBox.addEventListener('touchstart', (e) => startDrag(e.touches[0].clientX), { passive: true });
+  window.addEventListener('touchmove', (e) => { if (dragging) setSplit(e.touches[0].clientX); }, { passive: true });
+  window.addEventListener('touchend', endDrag);
+
+  /* Quote form */
+  document.getElementById('quoteForm').addEventListener('submit', function (e) {
     e.preventDefault();
     document.getElementById('formHolder').innerHTML =
       '<div class="sent-msg">Request received &mdash; we\'ll text you a quote shortly.</div>';
