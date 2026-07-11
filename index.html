@@ -85,6 +85,13 @@
     .panel .g2, .glow{animation:none !important;}
   }
 
+  /* Ambient light-fade layer — a soft glow that drifts and breathes as the page scrolls */
+  #ambientLight{position:fixed; inset:0; z-index:2; pointer-events:none; mix-blend-mode:screen;
+    background:radial-gradient(520px 520px at 50% var(--lightY,20%), rgba(198,161,91,var(--lightA,.10)), transparent 68%);
+    transition:background-position .1s linear;
+  }
+  @media (prefers-reduced-motion: reduce){ #ambientLight{display:none;} }
+
   /* Buttons with shine sweep */
   .btn, .btn-outline{position:relative; overflow:hidden; display:inline-block; font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.28em; border-radius:2px; transition:transform .2s ease, background .2s ease, color .2s ease;}
   .btn{background:var(--gold); color:var(--graphite); padding:14px 26px; border:none; cursor:pointer;}
@@ -107,6 +114,39 @@
   .call-btn{border:1px solid var(--gold); color:var(--gold); font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.2em; padding:8px 16px; border-radius:2px; transition:.2s;}
   .call-btn:hover{background:var(--gold); color:var(--graphite);}
   @media(max-width:768px){ nav{display:none;} }
+
+  /* Hamburger toggle (mobile only) */
+  .nav-toggle{display:none; position:relative; width:36px; height:36px; border:1px solid var(--surfaceLine); background:transparent; border-radius:2px; cursor:pointer; align-items:center; justify-content:center; margin-right:12px; flex-shrink:0;}
+  .nav-toggle .bars{position:relative; width:18px; height:12px;}
+  .nav-toggle .bars span{position:absolute; left:0; width:100%; height:2px; background:var(--gold); border-radius:1px; transition:transform .3s cubic-bezier(.19,1,.22,1), opacity .2s ease, top .3s cubic-bezier(.19,1,.22,1);}
+  .nav-toggle .bars span:nth-child(1){top:0;}
+  .nav-toggle .bars span:nth-child(2){top:5px;}
+  .nav-toggle .bars span:nth-child(3){top:10px;}
+  .nav-toggle.open .bars span:nth-child(1){top:5px; transform:rotate(45deg);}
+  .nav-toggle.open .bars span:nth-child(2){opacity:0;}
+  .nav-toggle.open .bars span:nth-child(3){top:5px; transform:rotate(-45deg);}
+  @media(max-width:768px){ .nav-toggle{display:inline-flex;} }
+
+  /* Mobile dropdown menu */
+  .mobile-nav{display:none; max-height:0; overflow:hidden; background:var(--surface); border-bottom:1px solid var(--surfaceLine); transition:max-height .45s cubic-bezier(.19,1,.22,1);}
+  .mobile-nav.open{max-height:340px;}
+  .mobile-nav ul{list-style:none; padding:8px 24px 20px;}
+  .mobile-nav li{border-bottom:1px solid var(--surfaceLine);}
+  .mobile-nav li:last-child{border-bottom:none;}
+  .mobile-nav a{display:block; padding:14px 4px; font-family:var(--mono); font-size:13px; text-transform:uppercase; letter-spacing:.2em; color:var(--steel); opacity:0; transform:translateX(-10px); transition:color .2s ease, opacity .35s ease, transform .35s ease;}
+  .mobile-nav.open a{opacity:1; transform:translateX(0);}
+  .mobile-nav.open li:nth-child(1) a{transition-delay:.08s;}
+  .mobile-nav.open li:nth-child(2) a{transition-delay:.14s;}
+  .mobile-nav.open li:nth-child(3) a{transition-delay:.2s;}
+  .mobile-nav.open li:nth-child(4) a{transition-delay:.26s;}
+  .mobile-nav.open li:nth-child(5) a{transition-delay:.32s;}
+  .mobile-nav a:hover{color:var(--ink);}
+  @media(max-width:768px){ .mobile-nav{display:block;} }
+  @media (prefers-reduced-motion: reduce){
+    .mobile-nav{transition:none;}
+    .mobile-nav a{transition:none; opacity:1; transform:none;}
+    .nav-toggle .bars span{transition:none;}
+  }
 
   /* Hero */
   .hero{border-bottom:1px solid var(--surfaceLine); padding:0;}
@@ -207,13 +247,19 @@
   .foot-h{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.28em; color:var(--gold);}
   .foot-grid ul{margin-top:12px; list-style:none; font-size:14px; color:var(--steel);}
   .foot-grid li{margin-bottom:4px;}
-  .foot-grid li a{transition:color .2s ease;}
+  .foot-grid li a{transition:color .2s ease; overflow-wrap:anywhere; word-break:break-word;}
   .foot-grid li a:hover{color:var(--ink);}
   .foot-bottom{border-top:1px solid var(--surfaceLine); padding:20px 0; text-align:center; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.28em; color:var(--steel);}
-  @media(max-width:768px){ .foot-grid{grid-template-columns:1fr 1fr;} }
+  @media(max-width:768px){ .foot-grid{grid-template-columns:1fr 1fr; gap:32px 24px; padding:48px 0;} }
+  @media(max-width:480px){
+    .foot-grid{grid-template-columns:1fr; gap:32px; padding:40px 0;}
+    .foot-grid p{max-width:none;}
+    .foot-bottom{font-size:10px; letter-spacing:.16em; padding:16px 20px; line-height:1.8;}
+  }
 </style>
 </head>
 <body>
+<div id="ambientLight"></div>
 
 <header id="siteHeader">
   <div class="wrap">
@@ -227,7 +273,21 @@
       <a href="#reviews">Reviews</a>
       <a href="#pricing">Pricing</a>
     </nav>
-    <a href="tel:+13144999409" class="call-btn">(314) 499-9409</a>
+    <div style="display:flex; align-items:center;">
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileNav">
+        <span class="bars"><span></span><span></span><span></span></span>
+      </button>
+      <a href="tel:+13144999409" class="call-btn">(314) 499-9409</a>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <ul>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#quote">Get a quote</a></li>
+    </ul>
   </div>
 </header>
 
@@ -459,6 +519,42 @@
   window.addEventListener('scroll', () => {
     header.classList.toggle('scrolled', window.scrollY > 10);
   });
+
+  /* Ambient light fade — the glow drifts down the page and breathes near section edges */
+  const root = document.documentElement;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ticking = false;
+  function updateAmbientLight() {
+    const doc = document.documentElement;
+    const max = doc.scrollHeight - doc.clientHeight;
+    const p = max > 0 ? window.scrollY / max : 0;
+    root.style.setProperty('--lightY', (12 + p * 76) + '%');
+    root.style.setProperty('--lightA', (0.06 + Math.sin(p * Math.PI * 3) * 0.05 + 0.05).toFixed(3));
+    ticking = false;
+  }
+  if (!reducedMotion) {
+    updateAmbientLight();
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(updateAmbientLight); ticking = true; }
+    });
+    window.addEventListener('resize', updateAmbientLight);
+  }
+
+  /* Mobile dropdown menu */
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  function closeMobileNav() {
+    navToggle.classList.remove('open');
+    mobileNav.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }
+  navToggle.addEventListener('click', () => {
+    const isOpen = mobileNav.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobileNav.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeMobileNav));
+  window.addEventListener('resize', () => { if (window.innerWidth > 768) closeMobileNav(); });
 
   /* Scroll-triggered reveals */
   const revealEls = document.querySelectorAll('.reveal');
